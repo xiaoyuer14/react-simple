@@ -149,6 +149,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 var ReactDom = {
   render: render
 };
@@ -163,9 +166,59 @@ function render(vNode, container) {
     return container.appendChild(textNode);
   }
 
-  var tag = vNode.tag;
+  var tag = vNode.tag,
+      attrs = vNode.attrs;
   var dom = document.createElement(tag);
+
+  if (attrs) {
+    Object.keys(attrs).forEach(function (key) {
+      var value = attrs[key];
+      setAttribute(dom, key, value);
+    });
+  }
+
   return container.appendChild(dom);
+} // 设置属性
+
+
+function setAttribute(dom, key, value) {
+  // 属性名需要做判断转换
+  switch (key) {
+    case "className":
+      key = "class";
+      break;
+
+    case "style":
+      if (!value || typeof value === "string") {
+        dom.style.cssText = value || "";
+      } else if (value && _typeof(value) === "object") {
+        for (var k in value) {
+          dom.style[k] = typeof value[k] === "number" ? value[k] + "px" : value[k];
+        }
+      }
+
+      break;
+
+    default:
+      // 是否时on开头的事件
+      if (/on\w+/.test(key)) {
+        key = key.toLowerCase();
+        dom[key] = value || "";
+      } else {
+        // 其他属性
+        if (key in dom) {
+          dom[key] = value || "";
+        }
+
+        if (value) {
+          dom.setAttribute(key, value);
+        } else {
+          dom.removeAttribute(key);
+        }
+      }
+
+      break;
+  }
 }
 
 var _default = ReactDom;
@@ -179,10 +232,17 @@ var _reactDom = _interopRequireDefault(require("./react-dom"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var type = "react";
+
 var ele = _react.default.createElement("div", {
   className: "active",
-  title: "123"
-}, "hello,", _react.default.createElement("span", null, "react"));
+  title: type,
+  style: {
+    width: '90%',
+    color: 'red',
+    fontSize: 14
+  }
+}, "hello,", _react.default.createElement("span", null, type));
 
 console.log(ele);
 
