@@ -11,7 +11,7 @@ function render(vNode, container) {
         const textNode = document.createTextNode(vNode);
         return container.appendChild(textNode);
     }
-    const { tag, attrs } = vNode;
+    const { tag, attrs, children } = vNode;
     const dom = document.createElement(tag);
 
     if(attrs) {
@@ -20,7 +20,11 @@ function render(vNode, container) {
             setAttribute(dom, key, value);
         })
     }
+    
+    // 递归渲染子节点
+    children.forEach(child => render(child, dom));
 
+    // 渲染子节点
     return container.appendChild(dom);
 }
 

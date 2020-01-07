@@ -167,7 +167,8 @@ function render(vNode, container) {
   }
 
   var tag = vNode.tag,
-      attrs = vNode.attrs;
+      attrs = vNode.attrs,
+      children = vNode.children;
   var dom = document.createElement(tag);
 
   if (attrs) {
@@ -175,7 +176,12 @@ function render(vNode, container) {
       var value = attrs[key];
       setAttribute(dom, key, value);
     });
-  }
+  } // 递归渲染子节点
+
+
+  children.forEach(function (child) {
+    return render(child, dom);
+  }); // 渲染子节点
 
   return container.appendChild(dom);
 } // 设置属性
